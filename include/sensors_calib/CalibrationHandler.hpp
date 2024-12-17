@@ -67,7 +67,7 @@ struct CalibrationHandlerParam {
 };
 
 CalibrationHandlerParam getCalibrationHandlerParam(const std::string& jsonPath);
-template <> void validate<CalibrationHandlerParam>(const CalibrationHandlerParam& param);
+template <typename T> void validate(const T& param);
 
 template <typename POINT_CLOUD_TYPE> class CalibrationHandler
 {
@@ -87,6 +87,9 @@ template <typename POINT_CLOUD_TYPE> class CalibrationHandler
 
     std::vector<cv::Mat> drawPointCloudOnImagePlane(const TransformInfo& transform) const;
     std::vector<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> projectOnPointCloud(const TransformInfo& transform) const;
+    bool reloadPointCloudAndImages(std::vector<cv::Mat> &color_imgs,
+                                       std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> &point_clouds,
+                                       const TransformInfo &init_guess = TransformInfo::Identity()); 
 
  private:
     /**

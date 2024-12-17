@@ -42,10 +42,10 @@ bool HistogramHandler::update(const cv::Mat& grayImg, const typename pcl::PointC
     }
 
     typename pcl::PointCloud<PointCloudType>::Ptr alignedCloud(new pcl::PointCloud<PointCloudType>());
-    pcl::transformPointCloud(*inCloud, *alignedCloud, affine.matrix());
+    pcl::transformPointCloud(*inCloud, *alignedCloud, affine.matrix());//变换
 
     for (const auto& point : alignedCloud->points) {
-        cv::Point imgPoint = projectToImagePlane(point, cameraInfo);
+        cv::Point imgPoint = projectToImagePlane(point, cameraInfo);//(pointx/pointz,pointy/pointz)
         if (!this->validateImagePoint(grayImg, imgPoint)) {
             continue;
         }

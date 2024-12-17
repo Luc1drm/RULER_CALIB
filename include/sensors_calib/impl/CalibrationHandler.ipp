@@ -17,8 +17,12 @@ CalibrationHandler<POINT_CLOUD_TYPE>::CalibrationHandler(const CalibrationHandle
     if (!param.pathToInitialGuess.empty()) {
         m_initialGuess = perception::getTransformInfo(m_param.pathToInitialGuess);
     }
-    std::vector<std::string> imagePaths = parseMetaDataFile(m_param.pathToImages);
-    std::vector<std::string> pointcloudPaths = parseMetaDataFile(m_param.pathToPointClouds);
+    //std::vector<std::string> imagePaths = parseMetaDataFile(m_param.pathToImages);
+    //std::vector<std::string> pointcloudPaths = parseMetaDataFile(m_param.pathToPointClouds);
+
+    std::vector<std::string> imagePaths, pointcloudPaths;
+    imagePaths.push_back(m_param.pathToImages);
+    pointcloudPaths.push_back(m_param.pathToPointClouds);
 
     if (imagePaths.size() != pointcloudPaths.size()) {
         throw std::runtime_error("number of images and point clouds must be the same");
@@ -58,8 +62,8 @@ CalibrationHandler<POINT_CLOUD_TYPE>::CalibrationHandler(const CalibrationHandle
         m_colorImgs.emplace_back(colorImg);
         m_grayImgs.emplace_back(grayImg);
 
-        inCloud = perception::PointCloudFilter<PointCloudType>::filterXYZAxis(
-            inCloud, m_param.xMin, m_param.xMax, m_param.yMin, m_param.yMax, m_param.zMin, m_param.zMax);
+        // inCloud = perception::PointCloudFilter<PointCloudType>::filterXYZAxis(
+        //     inCloud, m_param.xMin, m_param.xMax, m_param.yMin, m_param.yMax, m_param.zMin, m_param.zMax);
 
         m_poinclouds.emplace_back(PointCloudPtr(new PointCloud(*inCloud)));
     }
@@ -72,6 +76,37 @@ CalibrationHandler<POINT_CLOUD_TYPE>::CalibrationHandler(const CalibrationHandle
 template <typename POINT_CLOUD_TYPE> CalibrationHandler<POINT_CLOUD_TYPE>::~CalibrationHandler()
 {
 }
+
+template<typename POINT_CLOUD_TYPE>
+    bool CalibrationHandler<POINT_CLOUD_TYPE>::reloadPointCloudAndImages(
+        std::vector<cv::Mat> &color_imgs, std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> &point_clouds,
+        const TransformInfo &init_guess) {
+        // validate<CalibrationHandlerParam>(m_param);
+        m_initialGuess = init_guess;
+        int32_t numSamples = color_imgs.size();
+        m_colorImgs.clear();
+        m_grayImgs.clear();
+        m_poinclouds.clear();
+        m_colorImgs.reserve(numSamples);
+        m_grayImgs.reserve(numSamples);
+        m_poinclouds.reserve(numSamples);
+
+        cv::Mat grayImg;
+        for (int i = 0; i < numSamples; ++i) {
+            if (m_param.filterInputImage) {
+                cv::Mat filtered;
+                cv::bilateralFilter(color_imgs[i], filtered, m_param.filterDiameter, m_param.sigmaColor,
+                                    m_param.sigmaSpace);
+                cv::cvtColor(filtered, grayImg, cv::COLOR_BGR2GRAY);
+            } else {
+                cv::cvtColor(color_imgs[i], grayImg, cv::COLOR_BGR2GRAY);
+            }
+            m_colorImgs.emplace_back(color_imgs[i]);
+            m_grayImgs.emplace_back(grayImg);
+            m_poinclouds.emplace_back(point_clouds[i]);
+        }
+        return true;
+    }
 
 template <typename POINT_CLOUD_TYPE>
 double CalibrationHandler<POINT_CLOUD_TYPE>::calculateMICost(const TransformInfo& transform)
@@ -215,6 +250,9 @@ CalibrationHandler<POINT_CLOUD_TYPE>::projectOnPointCloud(const TransformInfo& t
         const auto& curCloud = m_poinclouds[i];
         result.emplace_back(perception::projectOnPointCloud<PointCloudType>(colorImg, curCloud, *m_cameraInfo,
                                                                             perception::toAffine(transform)));
+        
+        // result.emplace_back(perception::colorPointCloud<PointCloudType>(curCloud, colorImg, *m_cameraInfo,
+        //                                                                     perception::toAffine(transform)));
     }
 
     return result;

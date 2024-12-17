@@ -16,10 +16,10 @@ CalibrationHandlerParam getCalibrationHandlerParam(const std::string& jsonPath)
     rapidjson::Document jsonDoc = readFromJsonFile(jsonPath);
     CalibrationHandlerParam param;
 
-    param.pathToInitialGuess = getValueAs<std::string>(jsonDoc, "path_to_initial_guess");
-    param.pathToImages = getValueAs<std::string>(jsonDoc, "path_to_images");
-    param.pathToPointClouds = getValueAs<std::string>(jsonDoc, "path_to_point_clouds");
-    param.pathToCameraInfo = getValueAs<std::string>(jsonDoc, "path_to_camera_info");
+    // param.pathToInitialGuess = getValueAs<std::string>(jsonDoc, "path_to_initial_guess");
+    // param.pathToImages = getValueAs<std::string>(jsonDoc, "path_to_images");
+    // param.pathToPointClouds = getValueAs<std::string>(jsonDoc, "path_to_point_clouds");
+    // param.pathToCameraInfo = getValueAs<std::string>(jsonDoc, "path_to_camera_info");
 
     param.numBins = getValueAs<int>(jsonDoc, "num_bins");
     param.deltaTrans = getValueAs<double>(jsonDoc, "delta_trans");
@@ -49,18 +49,18 @@ CalibrationHandlerParam getCalibrationHandlerParam(const std::string& jsonPath)
     return param;
 }
 
-template <> void validate<CalibrationHandlerParam>(const CalibrationHandlerParam& param)
-{
-    if (param.pathToImages.empty()) {
-        throw std::runtime_error("empty path to images");
-    }
+    template <> void validate<CalibrationHandlerParam>(const CalibrationHandlerParam& param)
+    {
+        if (param.pathToImages.empty()) {
+            throw std::runtime_error("empty path to images");
+        }
 
-    if (param.pathToPointClouds.empty()) {
-        throw std::runtime_error("empty path to point clouds");
-    }
+        if (param.pathToPointClouds.empty()) {
+            throw std::runtime_error("empty path to point clouds");
+        }
 
-    if (param.pathToCameraInfo.empty()) {
-        throw std::runtime_error("empty path to camera info");
+        if (param.pathToCameraInfo.empty()) {
+            throw std::runtime_error("empty path to camera info");
+        }
     }
-}
 }  // namespace perception

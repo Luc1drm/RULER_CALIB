@@ -7,6 +7,7 @@
 
 #include <sensors_calib/HistogramHandler.hpp>
 #include <sensors_calib/utils/Utility.hpp>
+#include <sensors_calib/Constants.hpp>
 
 namespace perception
 {

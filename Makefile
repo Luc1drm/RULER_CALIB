@@ -3,7 +3,7 @@ BUILD_TYPE=Release
 CMAKE_ARGS:=$(CMAKE_ARGS)
 
 default:
-	@mkdir -p build
+	@mkdir build
 	@cd build && cmake .. -DBUILD_EXAMPLES=$(BUILD_EXAMPLES) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_ARGS) && make
 
 debug:

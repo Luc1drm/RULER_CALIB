@@ -10,7 +10,7 @@ set(SOURCE_FILES
 )
 
 add_library(${LIBRARY_NAME}
-  SHARED
+  STATIC
     ${SOURCE_FILES}
 )
 
@@ -29,8 +29,11 @@ target_link_libraries(${LIBRARY_NAME}
     ${PCL_LIBRARIES}
 )
 
+# Platform-specific compile options
 target_compile_options(${LIBRARY_NAME}
   PRIVATE
-     $<$<CONFIG:Debug>:-O0 -g -Wall -Werror>
-     $<$<CONFIG:Release>:-O3 -Wall -Werror>
+    $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:MSVC>>:/Od /DEBUG /W4 /WX>
+    $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/O2 /W4 /WX>
+    $<$<AND:$<CONFIG:Debug>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-O0 -g -Wall -Werror>
+    $<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-O3 -Wall -Werror>
 )

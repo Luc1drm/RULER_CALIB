@@ -24,9 +24,11 @@ class CameraInfo
     ~CameraInfo();
 
     const Eigen::Matrix3d& K() const;
+    const Eigen::Vector4d& coeffk() const;
 
  private:
     Eigen::Matrix3d m_K;
+    Eigen::Vector4d coeff_k;//distortion
 };
 
 using TransformInfo = Eigen::Matrix<double, 6, 1>;  // x, y, z, r, p, y

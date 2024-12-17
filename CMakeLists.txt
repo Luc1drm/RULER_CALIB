@@ -7,21 +7,20 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 set(LIBRARY_NAME ${PROJECT_NAME})
 
+set(RAPIDJSON_INCLUDE_DIRS "D:/Program Files/rapidjson/include")
+include_directories(${RAPIDJSON_INCLUDE_DIRS})
+
 find_package(OpenCV REQUIRED)
+set(PCL_DIR " D:\\Program Files\\PCL\ 1.13.0")
 find_package(PCL REQUIRED)
 
-include(Findrapidjson)
-if(NOT RAPIDJSON_FOUND)
-  message(STATUS "rapidjson not found")
-  return()
-endif()
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 add_compile_options(
   "$<$<CONFIG:DEBUG>:-DDEBUG>"
 )
 
 add_subdirectory(src)
-
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
+add_subdirectory(examples)
