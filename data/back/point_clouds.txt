@@ -1,1 +1,0 @@
-D:/Personfile/calib/automatic/automatic_lidar_camera_calibration/data/back/cut_.pcd
